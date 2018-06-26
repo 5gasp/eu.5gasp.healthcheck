@@ -57,20 +57,23 @@ public class ShiroUTAuthorizingRealm extends AuthorizingRealm {
 
 		SimpleAuthorizationInfo ai = new SimpleAuthorizationInfo();
 
-		PortalUser bu = portalRepositoryRef.getUserByUsername( arg0.toString() );
-		if (bu!=null){
-
-			
-			//String r = bu.getRole();
-			if ( bu.getRoles().isEmpty()  ){
-				bu.addRole( UserRoleType.EXPERIMENTER );
-			}
-			for (UserRoleType role : bu.getRoles()) {
-				logger.info("PrincipalCollection Role=" + role.toString());
-				ai.addRole( role.toString() );
-				
-			}
-		}
+		ai.addRole( "ADMIN" );
+		
+		
+//		PortalUser bu = portalRepositoryRef.getUserByUsername( arg0.toString() );
+//		if (bu!=null){
+//
+//			
+//			//String r = bu.getRole();
+//			if ( bu.getRoles().isEmpty()  ){
+//				bu.addRole( UserRoleType.EXPERIMENTER );
+//			}
+//			for (UserRoleType role : bu.getRoles()) {
+//				logger.info("PrincipalCollection Role=" + role.toString());
+//				ai.addRole( role.toString() );
+//				
+//			}
+//		}
 		
 		
 		return ai;
@@ -82,42 +85,31 @@ public class ShiroUTAuthorizingRealm extends AuthorizingRealm {
 		logger.info("AuthenticationToken at=" + at.toString());
 
 		UsernamePasswordToken token = (UsernamePasswordToken) at;
-		logger.info("tokengetUsername at=" + token.getUsername());
-		//logger.info("tokengetPassword at=" + String.valueOf(token.getPassword()));
-		//logger.info("tokengetPrincipal at=" + token.getPrincipal());
-		
-		
-		PortalUser bu = portalRepositoryRef.getUserByUsername(token.getUsername());
-		if (bu == null ){
-			throw new AuthenticationException("Sorry! No login for you.");			
-		}
+//		logger.info("tokengetUsername at=" + token.getUsername());
+//		//logger.info("tokengetPassword at=" + String.valueOf(token.getPassword()));
+//		//logger.info("tokengetPrincipal at=" + token.getPrincipal());
+//		
+//		
+//		PortalUser bu = portalRepositoryRef.getUserByUsername(token.getUsername());
+//		if (bu == null ){
+//			throw new AuthenticationException("Sorry! No login for you.");			
+//		}
+//
+//		String originalPass = bu.getPassword();
+//		String suppliedPass = EncryptionUtil.hash(   String.valueOf(token.getPassword())  );
+//		logger.info("originalPass =" + originalPass );
+//		logger.info("suppliedPass =" + suppliedPass );
+//		if  (originalPass.equals( suppliedPass   )) {
+//			logger.info("======= USER is AUTHENTICATED OK =======");
+//		} else {
+//			throw new AuthenticationException("Sorry! No login for you.");
+//		}
 
-		String originalPass = bu.getPassword();
-		String suppliedPass = EncryptionUtil.hash(   String.valueOf(token.getPassword())  );
-		logger.info("originalPass =" + originalPass );
-		logger.info("suppliedPass =" + suppliedPass );
-		if  (originalPass.equals( suppliedPass   )) {
-			logger.info("======= USER is AUTHENTICATED OK =======");
-		} else {
-			throw new AuthenticationException("Sorry! No login for you.");
-		}
-
-		// try {
-		// currentUser.login(token);
-		// } catch (AuthenticationException ex) {
-		// logger.info(ex.getMessage(), ex);
-		// throw new AuthenticationException("Sorry! No login for you.");
-		// }
-		// // Perform authorization check
-		// if (!requiredRoles.isEmpty() && !currentUser.hasAllRoles(requiredRoles)) {
-		// logger.info("Authorization failed for authenticated user");
-		// throw new AuthenticationException("Sorry! No login for you.");
-		// }
 
 		SimpleAuthenticationInfo sa = new SimpleAuthenticationInfo();
-		sa.setCredentials(token.getCredentials());
+		sa.setCredentials(at.getCredentials());
 		SimplePrincipalCollection principals = new org.apache.shiro.subject.SimplePrincipalCollection();
-		principals.add(token.getPrincipal(), "portalrealm");
+		principals.add(at.getPrincipal(), "portalrealm");
 		
 		
 		sa.setPrincipals(principals);

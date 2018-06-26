@@ -326,7 +326,37 @@
 		</pluginManagement>
 		<plugins>
 
+			<!-- openjpa enhance plugin configuration -->
+			<plugin>
+				<groupId>org.apache.openjpa</groupId>
+				<artifactId>openjpa-maven-plugin</artifactId>
+				<version>${openjpa.version}</version>
+				<configuration>
+					<includes>eu.5ginfire.portal.api.model</includes>
+					<excludes>**/eu.5ginfire.portal.api/*.class</excludes>
+					<addDefaultConstructor>true</addDefaultConstructor>
+					<enforcePropertyRestrictions>true</enforcePropertyRestrictions>
 
+				</configuration>
+				<executions>
+					<execution>
+						<id>enhancer-classes</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>enhance</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.openjpa</groupId>
+						<artifactId>openjpa</artifactId>
+						<!-- set the version to be the same as the level in your runtime -->
+						<version>${openjpa.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 
 			<!-- license plugin -->
 
@@ -456,16 +486,16 @@
 						</dependencies>
 						<configuration>
 							<preProcess>
-								<copy todir="target/docs/html/hc_manual/images">
+								<copy todir="target/docs/html/portal_manual/images">
 									<fileset dir="src/documentation/docbkx/images" />
 								</copy>
-								<copy todir="target/docs/html/hc_manual/css">
+								<copy todir="target/docs/html/portal_manual/css">
 									<fileset dir="src/documentation/docbkx/css" />
 								</copy>
-								<copy todir="target/docs/html/hc_manual/font">
+								<copy todir="target/docs/html/portal_manual/font">
 									<fileset dir="src/documentation/docbkx/font" />
 								</copy>
-								<copy todir="target/docs/html/hc_manual/js">
+								<copy todir="target/docs/html/portal_manual/js">
 									<fileset dir="src/documentation/docbkx/js" />
 								</copy>
 							</preProcess>
@@ -482,7 +512,7 @@
 								per page.False makes all in one page -->
 							<fop1Extensions>1</fop1Extensions>
 							<foCustomization>${project.basedir}/src/documentation/docbkx-stylesheet/html/docbook.xsl</foCustomization>
-							<includes> hc_manual.xml, test.xml</includes>
+							<includes> portal_manual.xml, test.xml</includes>
 						</configuration>
 
 					</plugin>
@@ -513,18 +543,18 @@
 									<jettyXml>${basedir}/src/test/resources/jetty.xml,${basedir}/src/test/resources/jetty-ssl.xml,${basedir}/src/test/resources/jetty-https.xml</jettyXml> -->
 
 								<httpConnector>
-									<port>6936</port>
+									<port>13000</port>
 								</httpConnector>
 								<scanIntervalSeconds>4</scanIntervalSeconds>
 
 								<webApp>
-									<contextPath>/hc</contextPath>
+									<contextPath>/5ginfireportal</contextPath>
 								</webApp>
 								<contextHandlers>
 									<contextHandler
 										implementation="org.eclipse.jetty.server.handler.ContextHandler">
 										<contextPath>/static</contextPath>
-										<resourceBase>/home/ubuntu/.hc/metadata/</resourceBase>
+										<resourceBase>/home/ubuntu/.portal/metadata/</resourceBase>
 										<handler implementation="org.eclipse.jetty.server.handler.ResourceHandler">
 											<cacheControl>no-cache</cacheControl>
 											<directoriesListed>true</directoriesListed>
@@ -639,6 +669,179 @@
 		</profile>
 
 
+		<profile>
+			<!-- Run profile for continuous running: mvn clean -Ptomcat.integration 
+				org.apache.tomcat.maven:tomcat7-maven-plugin:run and access to http://127.0.0.1:13000/jaxrs-service/hello/echo/SierraTangoNevadaxx 
+				For tomcat integration test: mvn clean -Ptomcat.integration verify -->
+			<id>tomcat.integration</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.tomcat.maven</groupId>
+							<artifactId>tomcat7-maven-plugin</artifactId>
+							<version>2.0</version>
+							<executions>
+								<execution>
+									<id>default-cli</id>
+									<goals>
+										<goal>run</goal>
+									</goals>
+									<configuration>
+										<port>13000</port>
+										<path>/5ginfireportal</path>
+										<useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>reserve-network-port</id>
+								<goals>
+									<goal>reserve-network-port</goal>
+								</goals>
+								<phase>process-test-resources</phase>
+								<configuration>
+									<portNames>
+										<portName>test.server.port</portName>
+									</portNames>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.tomcat.maven</groupId>
+						<artifactId>tomcat7-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>start-tomcat</id>
+								<goals>
+									<goal>run-war</goal>
+								</goals>
+								<phase>pre-integration-test</phase>
+								<configuration>
+									<port>${test.server.port}</port>
+									<path>/rsportal-srvtest</path>
+									<fork>true</fork>
+									<useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
+								</configuration>
+							</execution>
+							<execution>
+								<id>stop-tomcat</id>
+								<goals>
+									<goal>shutdown</goal>
+								</goals>
+								<phase>post-integration-test</phase>
+								<configuration>
+									<path>/rsportal-srvtest</path>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>2.8.1</version>
+						<executions>
+							<execution>
+								<id>integration-test</id>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<systemPropertyVariables>
+										<service.url>http://localhost:${test.server.port}/rsportal-srvtest</service.url>
+									</systemPropertyVariables>
+								</configuration>
+							</execution>
+							<execution>
+								<id>verify</id>
+								<goals>
+									<goal>verify</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 
+
+		<profile>
+			<id>cargo.run</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.cargo</groupId>
+						<artifactId>cargo-maven2-plugin</artifactId>
+						<version>1.4.8</version>
+
+						<configuration>
+							<container>
+								<containerId>jetty9x</containerId>
+								<zipUrlInstaller>
+									<url>http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-distribution/9.4.7.v20170914/jetty-distribution-9.4.7.v20170914.tar.gz</url>
+								</zipUrlInstaller>
+							</container>
+							<configuration>
+								<home>${project.build.directory}/jetty</home>
+								<properties>
+									<cargo.servlet.port>8080</cargo.servlet.port>
+								</properties>
+								<configfiles>
+
+								</configfiles>
+								<files>
+
+								</files>
+							</configuration>
+							<deployables>
+								<deployable>
+									<location>../eu.5ginfire.portal.api-0.0.1-SNAPSHOT.war</location>
+									<type>war</type>
+									<properties>
+										<context>/portal</context>
+									</properties>
+								</deployable>
+							</deployables>
+							<packager>
+								<outputLocation>${project.build.directory}/jetty-packaged</outputLocation>
+							</packager>
+						</configuration>
+						<executions>
+							<execution>
+								<id>start</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>start</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>stop</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>package</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>package</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>

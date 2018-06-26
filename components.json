@@ -1,0 +1,44 @@
+[
+	{
+		"name": "PORTAL",
+		"description": "Portal Component",
+		"apikey": "53f7118f-66bf-4351-a409-22e37f89b36a",
+		"status": "FAIL",
+		"type": "SERVICE",
+		"mode": "ACTIVE",
+		"locationName": "Patras,GR",
+		"checkURL": "https://5ginfire.portal.eu",
+		"latitude": "38.220220",
+		"longitude": "21.234456",
+		"lastSeen": null,
+		"failoverThreshold": 3600000
+	},
+	{
+		"name": "OSM",
+		"description": "OSM Component",
+		"apikey": "5265fb58-ad9b-4511-a60c-b82cc5fbbdac",
+		"status": "FAIL",
+		"type": "SERVICE",
+		"mode": "PASSIVE",
+		"locationName": "Madrid,ES",
+		"checkURL": null,
+		"latitude": "36.220220",
+		"longitude": "21.234456",
+		"lastSeen": null,
+		"failoverThreshold": 3600000
+	},
+	{
+		"name": "BRISTOL",
+		"description": "BRISTOL VIM",
+		"apikey": "5265fb58-ad9b-4511-a60c-b82cc5fbb809",
+		"status": "FAIL",
+		"type": "VIM",
+		"mode": "PASSIVE",
+		"locationName": "Bristol,UK",
+		"checkURL": null,
+		"latitude": "36.220220",
+		"longitude": "21.234456",
+		"lastSeen": null,
+		"failoverThreshold": 3600000
+	}
+]

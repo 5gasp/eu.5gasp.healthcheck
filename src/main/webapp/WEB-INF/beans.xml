@@ -61,7 +61,7 @@
 
 	<!-- Apapche Shiro -->
 
-	<bean class="healthcheck.AjaxUserFilter" id="ajaxUserFilter">
+	<bean class="healthcheck.util.AjaxUserFilter" id="ajaxUserFilter">
 	</bean>
 
 	<bean id="securityManagerBean" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
@@ -110,10 +110,10 @@
 				# everything else requires authentication:
 				/index.html = anon
 				/services/api/components/** = anon, rest
-				/services/api/** = userfilter, rest
-				/admin/logout = logout
-				/admin/** = authc
-				/** = authc
+				/services/api/admin/components/** = anon, rest
+				/services/api/** = anon, rest
+				/admin/** = anon
+				/** = anon
 
 			</value>
 		</property>
@@ -124,7 +124,7 @@
     <package>healthcheck.routes</package>    
   </camelContext>
   
-  <bean id="busController" class="portal.api.bus.BusController">
+  <bean id="busController" class="healthcheck.util.BusController">
 	<property name="actx" ref="camelContext" />
 	</bean>
 	

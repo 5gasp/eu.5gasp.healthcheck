@@ -27,7 +27,9 @@ public class Component {
 	/** */
 	private String checkURL;
 	/** */
-	private String gpsCoord;
+	private String latitude;
+	/** */
+	private String longitude;
 	/** */
 	private Date lastSeen;
 	/** in seconds */
@@ -125,17 +127,31 @@ public class Component {
 	public void setLocationName(String locationName) {
 		this.locationName = locationName;
 	}
+
+
 	/**
-	 * @return the gpsCoord
+	 * @return the latitude
 	 */
-	public String getGpsCoord() {
-		return gpsCoord;
+	public String getLatitude() {
+		return latitude;
 	}
 	/**
-	 * @param gpsCoord the gpsCoord to set
+	 * @param latitude the latitude to set
 	 */
-	public void setGpsCoord(String gpsCoord) {
-		this.gpsCoord = gpsCoord;
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+	/**
+	 * @return the longitude
+	 */
+	public String getLongitude() {
+		return longitude;
+	}
+	/**
+	 * @param longitude the longitude to set
+	 */
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
 	}
 	/**
 	 * @return the lastSeen
