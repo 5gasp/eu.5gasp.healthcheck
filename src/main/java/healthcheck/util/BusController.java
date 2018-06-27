@@ -18,6 +18,8 @@ package healthcheck.util;
 import org.apache.camel.FluentProducerTemplate;
 import org.apache.camel.model.ModelCamelContext;
 
+import healthcheck.model.Component;
+
 
 /**
  *  * 
@@ -59,6 +61,25 @@ public class BusController {
 	 */
 	public static void setActx(ModelCamelContext actx) {
 		BusController.actx = actx;
+	}
+
+
+	/**
+	 * @param component
+	 */
+	public void componentSeen(Component component) {
+		FluentProducerTemplate template = actx.createFluentProducerTemplate().to("seda:componentseen?multipleConsumers=true");
+		template.withBody( component ).asyncSend();
+	}
+
+
+	/**
+	 * @param component
+	 */
+	public void componentStatusChanged(Component component) {
+		FluentProducerTemplate template = actx.createFluentProducerTemplate().to("seda:componentchangedstatus?multipleConsumers=true");
+		template.withBody( component ).asyncSend();
+		
 	}
 
 	

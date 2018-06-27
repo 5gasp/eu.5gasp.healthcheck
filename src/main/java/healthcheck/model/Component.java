@@ -1,6 +1,9 @@
 package healthcheck.model;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 /**
  * 
@@ -31,10 +34,15 @@ public class Component {
 	/** */
 	private String longitude;
 	/** */
-	private Date lastSeen;
+	private Instant lastSeen;
 	/** in seconds */
 	private long failoverThreshold;
-	
+	/** */
+	private String onIssueNotificationProduct;
+	/** */
+	private String onIssueNotificationComponent;
+	/** */
+	private Boolean issueRaised;
 		
 	
 	public Component() {
@@ -42,6 +50,7 @@ public class Component {
 		this.failoverThreshold = 60000;
 		this.mode = HealthCheckMode.PASSIVE;
 		this.status = ComponentStatus.FAIL;
+		this.issueRaised = true;  //we start from true so not to send immediatelly an issue if seen error after service restart
 	}
 	/**
 	 * @return the name
@@ -156,15 +165,18 @@ public class Component {
 	/**
 	 * @return the lastSeen
 	 */
-	public Date getLastSeen() {
+	public Instant getLastSeen() {
 		return lastSeen;
 	}
 	/**
 	 * @param lastSeen the lastSeen to set
 	 */
-	public void setLastSeen(Date lastSeen) {
-		this.lastSeen = lastSeen;
+	public void setLastSeen(Instant lastSeen) {
+		this.lastSeen = lastSeen;	
+		this.updateStatusSinceLastSeen();
+		
 	}
+	
 	/**
 	 * @return the failoverThreshold
 	 */
@@ -189,9 +201,88 @@ public class Component {
 	public void setCheckURL(String checkURL) {
 		this.checkURL = checkURL;
 	}
+	/**
+	 * @return the onIssueNotificationProduct
+	 */
+	public String getOnIssueNotificationProduct() {
+		return onIssueNotificationProduct;
+	}
+	/**
+	 * @param onIssueNotificationProduct the onIssueNotificationProduct to set
+	 */
+	public void setOnIssueNotificationProduct(String onIssueNotificationProduct) {
+		this.onIssueNotificationProduct = onIssueNotificationProduct;
+	}
+	/**
+	 * @return the onIssueNotificationComponent
+	 */
+	public String getOnIssueNotificationComponent() {
+		return onIssueNotificationComponent;
+	}
+	/**
+	 * @param onIssueNotificationComponent the onIssueNotificationComponent to set
+	 */
+	public void setOnIssueNotificationComponent(String onIssueNotificationComponent) {
+		this.onIssueNotificationComponent = onIssueNotificationComponent;
+	}
+	/**
+	 * @return the issueRaised
+	 */
+	public Boolean getIssueRaised() {
+		return issueRaised;
+	}
+	/**
+	 * @param issueRaised the issueRaised to set
+	 */
+	public void setIssueRaised(Boolean issueRaised) {
+		this.issueRaised = issueRaised;
+	}
 	
 	
 	
+	/**
+	 * @return seconds from Last Seen
+	 */
+	public long getSecondsDiffFromLastSeen() {
+		if ( this.getLastSeen() != null ){
+			Instant d1 = this.getLastSeen();
+			Instant d2 = Instant.now();
+			return (d2.getEpochSecond() -d1.getEpochSecond());
+		} else {
+			return Instant.MIN.getEpochSecond();
+		}
+		
+	}
+	
+
+	public void updateStatusSinceLastSeen() {		
+		
+		if ( (lastSeen != null) && (this.getSecondsDiffFromLastSeen() <= this.failoverThreshold ) )
+		{
+			issueRaised = false; //clear the flag the we send an Issue about this status
+			if (this.type.equals( ComponentType.PROCESS ) ) {
+				this.setStatus(  ComponentStatus.PASS );
+			} else {
+				this.setStatus(  ComponentStatus.UP );			
+			}
+		} else {
+			if (this.type.equals( ComponentType.PROCESS ) ) {
+				this.setStatus(  ComponentStatus.FAIL );
+			} else {
+				this.setStatus(  ComponentStatus.DOWN );			
+			}
+			
+		}
+	}
+	/**
+	 * @return the lastSeenUTC
+	 */
+	public String getLastSeenUTC() {
+		if ( this.getLastSeen() != null ){
+			return this.getLastSeen().atOffset( ZoneOffset.UTC ).toString() + " UTC" ; 
+		} else
+			return "NEVER";
+	}
 	
 
 }

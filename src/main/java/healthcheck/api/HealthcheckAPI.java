@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -19,6 +20,8 @@ import org.apache.commons.logging.LogFactory;
 
 import healthcheck.model.Component;
 import healthcheck.model.HCPassiveMessage;
+import healthcheck.model.HCRepository;
+import healthcheck.util.BusController;
 
 
 /**
@@ -65,12 +68,16 @@ public class HealthcheckAPI {
 		return Response.ok().entity( hcRepository.getComponents()).build();
 	}
 	
-	@POST
-	@Path("/admin/components/")
+	@GET
+	@Path("/admin/components/{componentname}/{apikey}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response setHCStatus( HCPassiveMessage msg ) {
+	public Response setHCStatus( @PathParam("componentname") String componentname , @PathParam("apikey") String apikey) {
 
+		HCPassiveMessage msg = new HCPassiveMessage();
+		msg.setComponentName( componentname );
+		msg.setApiKey(apikey);
+		
 		logger.info("Received POST for HCPassiveMessage: " + msg.getComponentName() );
 		logger.info("Received POST for HCPassiveMessage keu: " + msg.getApiKey() );
 		
@@ -84,10 +91,9 @@ public class HealthcheckAPI {
 		
 		Component component = this.hcRepository.getComponentsByName().get( msg.getComponentName() );
 
-		if ( component!=null ){
-			//BusController.getInstance().newUserAdded( u );	
-			component.setLastSeen( new Date() );
-			return Response.ok().build();
+		if ( ( component != null  ) && ( component.getApikey().equals( msg.getApiKey() ) )){
+			BusController.getInstance().componentSeen( component );
+			return Response.ok( msg ).build();
 		}else{			
 			return Response.status(Status.BAD_REQUEST).entity("Component not found or API KEY is wrong").build();
 		}
