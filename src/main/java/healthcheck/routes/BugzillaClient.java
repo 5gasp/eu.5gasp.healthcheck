@@ -56,12 +56,12 @@ public class BugzillaClient {
 		logger.info( "BugzillaClient.transformComponent2BugBody Component: " + c.getName() );
 		String product = c.getOnIssueNotificationProduct();
 		String component = c.getOnIssueNotificationComponent() ;
-		String summary = "[HEALTCHECK] Component " + c.getName() + ", Status: " + c.getStatus();
+		String summary = "[HEALTHCHECK] Component " + c.getName() + ", Status: " + c.getStatus();
 
 		String description = BUGHEADER
 				+ "\nComponent: " + c.getName()
 				+ "\nStatus: " + c.getStatus()
-				+ "\ntLastSeen: " + c.getLastSeen() ;
+				+ "\nLastSeen: " + c.getLastSeen() ;
 		
 		String status= "CONFIRMED";
 		String resolution = null;

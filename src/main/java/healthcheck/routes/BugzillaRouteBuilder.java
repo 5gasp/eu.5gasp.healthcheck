@@ -28,6 +28,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.PredicateClause;
@@ -35,6 +36,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.http4.HttpClientConfigurer;
 import org.apache.camel.component.http4.HttpComponent;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.config.Registry;
@@ -122,6 +124,7 @@ public class BugzillaRouteBuilder extends RouteBuilder {
 				.bean( ComponentController.class, "issueRaised")			
 				.bean( BugzillaClient.class, "transformComponent2BugBody")
 				.to("log:healthcheck.routes.BugzillaRouteBuilder?level=INFO")
+				.to("direct:bugzilla.newIssue")
 				.endChoice()
 			.otherwise()
 				.log( "Component ${body.name} NO issue raised" )
@@ -130,24 +133,27 @@ public class BugzillaRouteBuilder extends RouteBuilder {
 				
 		
 		
-//		/**
-//		 * Create New Issue in Bugzilla. The body is a {@link Bug}
-//		 */
-//		from("direct:bugzilla.newIssue")
-//		.marshal().json( JsonLibrary.Jackson, true)
-//		.convertBodyTo( String.class ).to("stream:out")
-//		.errorHandler(deadLetterChannel("direct:dlq_bugzilla")
-//				.maximumRedeliveries( 120 ) //let's try for the next 2 hours to send it....
-//				.redeliveryDelay( 60000 ).useOriginalMessage()
-//				.deadLetterHandleNewException( false )
-//				//.logExhaustedMessageHistory(false)
-//				.logExhausted(true)
-//				.logHandled(true)
-//				//.retriesExhaustedLogLevel(LoggingLevel.WARN)
-//				.retryAttemptedLogLevel( LoggingLevel.WARN) )
-//		.setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
-//		.toD( "https4://" + BUGZILLAURL + "/rest.cgi/bug?api_key="+ BUGZILLAKEY +"&throwExceptionOnFailure=true")
-//		.to("stream:out");
+		/**
+		 * Create New Issue in Bugzilla. The body is a {@link Bug}
+		 */
+		from("direct:bugzilla.newIssue")
+		.marshal().json( JsonLibrary.Jackson, true)
+		.convertBodyTo( String.class ).to("stream:out")
+		.errorHandler(deadLetterChannel("direct:dlq_bugzilla")
+				.maximumRedeliveries( 120 ) //let's try for the next 2 hours to send it....
+				.redeliveryDelay( 60000 ).useOriginalMessage()
+				.deadLetterHandleNewException( false )
+				//.logExhaustedMessageHistory(false)
+				.logExhausted(true)
+				.logHandled(true)
+				//.retriesExhaustedLogLevel(LoggingLevel.WARN)
+				.retryAttemptedLogLevel( LoggingLevel.WARN) )
+		.setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+		.toD( "https4://" + BUGZILLAURL + "/rest.cgi/bug?api_key="+ BUGZILLAKEY +"&throwExceptionOnFailure=true")
+		.to("stream:out");
+		
+		
+		
 //		
 //		/**
 //		 * Update issue in bugzilla. The body is a {@link Bug}. header.uuid is used to select the bug
