@@ -65,14 +65,15 @@ public class HCRepository {
 	private void loadComponents() {
 		
 	    try {
+	    	String filename = "etc/components.json";
 	    	
 			final ObjectMapper mapper = new ObjectMapper();
-			File f = new File("components.json");
+			File f = new File( filename );
 			if ( f.exists() ){
-				components = mapper.readValue( new File("components.json"),  new TypeReference<List<Component>>(){} );	
+				components = mapper.readValue( new File( filename ),  new TypeReference<List<Component>>(){} );	
 				logger.info( "Loaded Components JSON file from: " + f.getAbsolutePath() );			
 			} else{			
-				mapper.writeValue(  new File("components.json") , components);
+				mapper.writeValue(  new File( filename ) , components);
 				logger.info( "Components JSON file created at: " + f.getAbsolutePath() );
 			}
 			
@@ -102,7 +103,7 @@ public class HCRepository {
 
 		properties = new Properties();
 	    	
-		File f = new File("healthcheck.properties");
+		File f = new File("etc/healthcheck.properties");
 		if ( f.exists() ){
 			
 			logger.info( "Loaded healthcheck.properties file from: " + f.getAbsolutePath() );			
