@@ -22,6 +22,7 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.http4.HttpClientConfigurer;
 import org.apache.camel.component.http4.HttpComponent;
@@ -35,9 +36,12 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import healthcheck.model.Component;
 import healthcheck.model.ComponentController;
+import healthcheck.model.HCRepository;
+import healthcheck.model.HealthCheckMode;
 
 /**
  * 
@@ -48,14 +52,22 @@ import healthcheck.model.ComponentController;
 public class HCRouteBuilder extends RouteBuilder {
 
 
+	private static String BUGZILLAURL = "portal.5ginfire.eu:443/bugzilla";
+	
 	/** 
 	 * every 30seconds check Components Status
 	 */
-	private static final String REFRESH_PERIOD = "30000";
+	private static final String REFRESH_PERIOD = "60000";
+	/** 
+	 * every 30seconds check Components Status
+	 */
+	private static final String ACTIVE_COMPONENTS_POLLING_PERIOD = "10000";
 
 	/** */
 	private static final transient Log logger = LogFactory.getLog( HCRouteBuilder.class.getName());
 
+	@Autowired
+	HCRepository hcRepository;
 	
 	/* (non-Javadoc)
 	 * @see org.apache.camel.builder.RouteBuilder#configure()
@@ -78,6 +90,26 @@ public class HCRouteBuilder extends RouteBuilder {
 		from("seda:componentchangedstatus?multipleConsumers=true")
 		.convertBodyTo(Component.class)		
 		.log( "Component ${body.name} changed state to ${body.status} at ${date:now:yyyyMMddHHmmss} " );
+		
+		
+		for (Component comp : hcRepository.getComponents()) {
+			if ( comp.getMode().equals( HealthCheckMode.ACTIVE ) 
+					&& ( comp.getCheckURL() != null )
+					&& ( !comp.getCheckURL().equals("") )){
+
+				String url = comp.getCheckURL().replace( "https://", "https4://").replace( "http://", "http4://") ;
+				//create a timer to check status
+				from("timer://" + comp.getName().replace(" ", "_") + "Timer?period=" + ACTIVE_COMPONENTS_POLLING_PERIOD)
+				.log( "Will check component: " + comp.getName() + " by GET from URL: " + url )
+				.setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
+				.toD(  url  )
+				.log( "End refresh route we have a good result")
+				//.to("stream:out")
+				.setBody().constant(comp)
+				.bean( ComponentController.class, "componentSeen");
+			}
+			
+		}
 				
 	}
 
