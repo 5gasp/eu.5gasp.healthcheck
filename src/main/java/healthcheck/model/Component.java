@@ -16,9 +16,9 @@
 package healthcheck.model;
 
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * 
@@ -91,9 +91,11 @@ public class Component {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
 	/**
 	 * @return the apikey
 	 */
+	@JsonIgnore
 	public String getApikey() {
 		return apikey;
 	}
