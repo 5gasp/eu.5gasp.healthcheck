@@ -26,6 +26,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.http4.HttpClientConfigurer;
 import org.apache.camel.component.http4.HttpComponent;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.config.Registry;
@@ -55,13 +56,13 @@ public class HCRouteBuilder extends RouteBuilder {
 	private static String BUGZILLAURL = "portal.5ginfire.eu:443/bugzilla";
 	
 	/** 
-	 * every 30seconds check Components Status
+	 * every 1 minute check Components Status
 	 */
-	private static final String REFRESH_PERIOD = "60000";
+	private static final int REFRESH_PERIOD = 1*60*1000;
 	/** 
-	 * every 30seconds check Components Status
+	 * every 2 minutes check Components Status
 	 */
-	private static final String ACTIVE_COMPONENTS_POLLING_PERIOD = "10000";
+	private static final int ACTIVE_COMPONENTS_POLLING_PERIOD = 2*60*1000;
 
 	/** */
 	private static final transient Log logger = LogFactory.getLog( HCRouteBuilder.class.getName());
@@ -98,12 +99,14 @@ public class HCRouteBuilder extends RouteBuilder {
 					&& ( !comp.getCheckURL().equals("") )){
 
 				String url = comp.getCheckURL().replace( "https://", "https4://").replace( "http://", "http4://") ;
-				//create a timer to check status
-				from("timer://" + comp.getName().replace(" ", "_") + "Timer?period=" + ACTIVE_COMPONENTS_POLLING_PERIOD)
-				.log( "Will check component: " + comp.getName() + " by GET from URL: " + url )
+				//create a timer to check status. Randomize period.
+				int period = ACTIVE_COMPONENTS_POLLING_PERIOD + RandomUtils.nextInt( 0, 10000);
+				
+				from("timer://" + comp.getName().replace(" ", "_") + "Timer?period=" + period  )
+				.log( "Will check component: " + comp.getName() + " (every " + period + " msecs) by GET from URL: " + url )
 				.setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
 				.toD(  url  )
-				.log( "End refresh route we have a good result")
+				.log( "Component " + comp.getName() + " seems alive!" )
 				//.to("stream:out")
 				.setBody().constant(comp)
 				.bean( ComponentController.class, "componentSeen");
