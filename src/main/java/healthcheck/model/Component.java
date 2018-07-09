@@ -58,6 +58,7 @@ public class Component {
 	private String onIssueNotificationComponent;
 	/** */
 	private Boolean issueRaised;
+	private String apikeySecret;
 		
 	
 	public Component() {
@@ -95,10 +96,27 @@ public class Component {
 	/**
 	 * @return the apikey
 	 */
-	@JsonIgnore
+	
 	public String getApikey() {
 		return apikey;
 	}
+	
+	/**
+	 * copies apikey to apikeySecret and deletes the apiKey. So to GET components apikey is not visible anymore
+	 */
+	public void maskAPIKey() {
+		apikeySecret = apikey;
+		apikey = "********";
+	}
+	
+	/**
+	 * @return the comonent apikeySecret. Available only during runtime and not for json objects
+	 */
+	@JsonIgnore
+	public String getApikeySecret() {
+		return apikeySecret;
+	}
+	
 	/**
 	 * @param apikey the apikey to set
 	 */

@@ -15,6 +15,8 @@
 
 package healthcheck.api;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -76,7 +78,8 @@ public class HealthcheckAPI {
 				logger.info(" securityContext.getComponents()");
 
 		}
-		return Response.ok().entity( hcRepository.getComponents()).build();
+		List<Component> response = hcRepository.getComponents();
+		return Response.ok().entity( response ).build();
 	}
 	
 	@GET
@@ -102,7 +105,7 @@ public class HealthcheckAPI {
 		
 		Component component = this.hcRepository.getComponentsByName().get( msg.getComponentName() );
 
-		if ( ( component != null  ) && ( component.getApikey().equals( msg.getApiKey() ) )){
+		if ( ( component != null  ) && ( component.getApikeySecret().equals( msg.getApiKey() ) )){
 			BusController.getInstance().componentSeen( component );
 			return Response.ok( msg ).build();
 		}else{			

@@ -26,7 +26,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.http4.HttpClientConfigurer;
 import org.apache.camel.component.http4.HttpComponent;
-import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.config.Registry;
@@ -100,7 +100,7 @@ public class HCRouteBuilder extends RouteBuilder {
 
 				String url = comp.getCheckURL().replace( "https://", "https4://").replace( "http://", "http4://") ;
 				//create a timer to check status. Randomize period.
-				int period = ACTIVE_COMPONENTS_POLLING_PERIOD + RandomUtils.nextInt( 0, 10000);
+				int period = ACTIVE_COMPONENTS_POLLING_PERIOD + RandomUtils.nextInt( 30000 );
 				
 				from("timer://" + comp.getName().replace(" ", "_") + "Timer?period=" + period  )
 				.log( "Will check component: " + comp.getName() + " (every " + period + " msecs) by GET from URL: " + url )

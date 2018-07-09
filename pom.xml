@@ -18,10 +18,6 @@
 		<camel.version>2.21.0</camel.version>
 
 		<!-- repositories for distribution -->
-		<!-- snapshots -->
-		<repoMavenSnapshotId>repo-snapshot</repoMavenSnapshotId>
-		<repoMavenSnapshotName>repo-snapshot</repoMavenSnapshotName>
-		<repoMavenSnapshotUrl>${nexusRepositories}/snapshots</repoMavenSnapshotUrl>
 		<!-- releases -->
 		<repoMavenId>repo-release</repoMavenId>
 		<repoMavenName>repo-release</repoMavenName>
@@ -253,12 +249,9 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.2</version>
 		</dependency>
-		<dependency>
-			<groupId>eu.5ginFIRE.riftioyangschema2java</groupId>
-			<artifactId>eu.5ginFIRE.riftioyangschema2java</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<!-- swagger spec will be under http://localhost:13000/5ginfireportal/services/api/swagger.json 
+		
+
+		<!-- swagger spec will be under http://localhost:13000/hcs/services/api/swagger.json 
 			. TO create useful clients and specs go to https://editor.swagger.io -->
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -358,22 +351,7 @@
 
 
 	<repositories>
-		<!-- ci-cpr02 Nexus Repositories -->
-		<repository>
-			<id>${repoMavenSnapshotId}</id>
-			<name>${repoMavenSnapshotName}</name>
-			<url>${repoMavenSnapshotUrl}</url>
-		</repository>
-		<repository>
-			<id>${repoMavenId}</id>
-			<name>${repoMavenName}</name>
-			<url>${repoMavenUrl}</url>
-		</repository>
-		<repository>
-			<id>${repoMavenThirdpartyId}</id>
-			<name>${repoMavenThirdpartyName}</name>
-			<url>${repoMavenThirdpartyUrl}</url>
-		</repository>
+
 
 		<!-- Remote Repositories -->
 		<repository>

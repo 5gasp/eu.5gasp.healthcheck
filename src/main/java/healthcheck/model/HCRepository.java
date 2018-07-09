@@ -79,6 +79,7 @@ public class HCRepository {
 			
 			for (Component component : this.components) {
 				logger.info( "Loaded component JSON file from: " + component.getName() );	
+				component.maskAPIKey();
 				componentsByName.put(component.getName(), component);
 			}
 			
