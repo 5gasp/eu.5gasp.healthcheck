@@ -49,6 +49,11 @@ public class Component {
 	/** */
 	private String longitude;
 	/** */
+	private String linkEndLatitude;
+	
+	/** */
+	private String linkEndLongitude;
+	/** */
 	private Instant lastSeen;
 	/** in seconds */
 	private long failoverThreshold;
@@ -319,5 +324,30 @@ public class Component {
 			return "NEVER";
 	}
 	
+	
+	/**
+	 * @return the linkEndLatitude
+	 */
+	public String getLinkEndLatitude() {
+		return linkEndLatitude;
+	}
+	/**
+	 * @param linkEndLatitude the linkEndLatitude to set
+	 */
+	public void setLinkEndLatitude(String linkEndLatitude) {
+		this.linkEndLatitude = linkEndLatitude;
+	}
+	/**
+	 * @return the linkEndLongitude
+	 */
+	public String getLinkEndLongitude() {
+		return linkEndLongitude;
+	}
+	/**
+	 * @param linkEndLongitude the linkEndLongitude to set
+	 */
+	public void setLinkEndLongitude(String linkEndLongitude) {
+		this.linkEndLongitude = linkEndLongitude;
+	}
 
 }

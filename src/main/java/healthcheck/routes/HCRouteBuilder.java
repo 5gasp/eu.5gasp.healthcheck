@@ -62,7 +62,7 @@ public class HCRouteBuilder extends RouteBuilder {
 	/** 
 	 * every 2 minutes check Components Status
 	 */
-	private static final int ACTIVE_COMPONENTS_POLLING_PERIOD = 2*60*1000;
+	private static final int ACTIVE_COMPONENTS_POLLING_PERIOD = 3*60*1000;
 
 	/** */
 	private static final transient Log logger = LogFactory.getLog( HCRouteBuilder.class.getName());

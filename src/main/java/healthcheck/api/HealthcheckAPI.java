@@ -92,8 +92,7 @@ public class HealthcheckAPI {
 		msg.setComponentName( componentname );
 		msg.setApiKey(apikey);
 		
-		logger.info("Received POST for HCPassiveMessage: " + msg.getComponentName() );
-		logger.info("Received POST for HCPassiveMessage keu: " + msg.getApiKey() );
+		logger.info("Received POST for HCPassiveMessage: " + msg.getComponentName() + " | key: " + msg.getApiKey()  );
 		
 		
 		if ( (msg.getApiKey() == null) ||  (msg.getComponentName() == null) || (msg.getComponentName().equals("") )) {
