@@ -43,7 +43,7 @@ public class ComponentController {
 	 */
 	public Component componentSeen(Component c) {
 
-		logger.debug( "ComponentSeen " + c.getName());
+		logger.debug( "ComponentSeen:" + c.getName());
 		Component comp = hcRepository.getComponentsByName().get(c.getName());
 		comp.setLastSeen( Instant.now() );
 
