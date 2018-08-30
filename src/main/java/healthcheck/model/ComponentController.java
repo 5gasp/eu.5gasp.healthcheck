@@ -43,7 +43,7 @@ public class ComponentController {
 	 */
 	public Component componentSeen(Component c) {
 
-		logger.info( "TRIGGERED ComponentController.componentSeen " + c.getName());
+		logger.debug( "ComponentSeen " + c.getName());
 		Component comp = hcRepository.getComponentsByName().get(c.getName());
 		comp.setLastSeen( Instant.now() );
 
@@ -56,7 +56,7 @@ public class ComponentController {
 	 */
 	public void refreshComponentsStatus() {
 
-		logger.info( "TRIGGERED ComponentController.refreshComponentsStatus");
+		logger.debug( "TRIGGERED ComponentController.refreshComponentsStatus");
 		for (Component c : hcRepository.getComponents()) {
 			ComponentStatus prevStatus = c.getStatus();
 			c.updateStatusSinceLastSeen();
@@ -65,7 +65,7 @@ public class ComponentController {
 				BusController.getInstance().componentStatusChanged(c);
 			}			
 
-			logger.info( "Checked component " + c.getName() + ". NEW Status = " + c.getStatus() + " [PREVIOUS = " + prevStatus + "]" );
+			logger.debug( "Checked component " + c.getName() + ". NEW Status = " + c.getStatus() + " [PREVIOUS = " + prevStatus + "]" );
 
 		}
 	}
@@ -78,7 +78,7 @@ public class ComponentController {
 	 */
 	public Component issueRaised(Component c) {
 
-		logger.info( "TRIGGERED ComponentController.issueRaised " + c.getName());
+		logger.debug( "TRIGGERED ComponentController.issueRaised " + c.getName());
 		Component comp = hcRepository.getComponentsByName().get(c.getName());
 		comp.setIssueRaised( true );
 		return comp;
