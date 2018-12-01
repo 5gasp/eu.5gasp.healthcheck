@@ -147,7 +147,7 @@ public class HealthcheckAPI {
 		if ( ( component != null  ) ){
 			BusController.getInstance().componentSeen( component );
 			
-			CentralLogger.log(logmessage.getcLevel() , logmessage.getMessage(), component.getName() );
+			CentralLogger.log(logmessage.getclevel() , logmessage.getMessage(), component.getName() );
 			
 			return Response.ok().build();
 		}else{			
