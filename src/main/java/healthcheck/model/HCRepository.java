@@ -48,12 +48,15 @@ public class HCRepository {
 	/** */
 	private Map< String, Component > componentsByName;
 	/** */
+	private Map< String, Component > componentsByAPIKEY;
+	/** */
 	Properties properties;
 	
 	/** */
 	public HCRepository(){
 		components = new ArrayList<>();
 		componentsByName = new HashMap<>();
+		componentsByAPIKEY = new HashMap<>();
 		loadComponents();
 		loadProperties();
 	}
@@ -81,6 +84,7 @@ public class HCRepository {
 				logger.info( "Loaded component JSON file from: " + component.getName() );	
 				component.maskAPIKey();
 				componentsByName.put(component.getName(), component);
+				componentsByAPIKEY.put(component.getApikey() , component);
 			}
 			
 		} catch (JsonParseException e) {
@@ -157,6 +161,11 @@ public class HCRepository {
 	 */
 	public Properties getProperties() {
 		return properties;
+	}
+
+
+	public Map<String, Component>  getComponentsByAPIKEY() {
+		return componentsByAPIKEY;
 	}
 
 	
