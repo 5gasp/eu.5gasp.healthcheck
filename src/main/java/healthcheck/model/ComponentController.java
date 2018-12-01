@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import centralLog.api.CLevel;
+import centralLog.api.CentralLogger;
 import healthcheck.util.BusController;
 
 /**
@@ -47,6 +49,7 @@ public class ComponentController {
 		Component comp = hcRepository.getComponentsByName().get(c.getName());
 		comp.setLastSeen( Instant.now() );
 
+		
 		return comp;
 
 	}
@@ -63,6 +66,7 @@ public class ComponentController {
 
 			if (!prevStatus.equals(c.getStatus())) {
 				BusController.getInstance().componentStatusChanged(c);
+				CentralLogger.log(CLevel.INFO , c.getName() + " changed status to " + c.getStatus().toString().toUpperCase(), c.getName() );
 			}			
 
 			logger.debug( "Checked component " + c.getName() + ". NEW Status = " + c.getStatus() + " [PREVIOUS = " + prevStatus + "]" );

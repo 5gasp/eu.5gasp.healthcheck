@@ -53,12 +53,17 @@
 
   <camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
     <package>healthcheck.routes</package>    
+    <package>centralLog.api</package>    
   </camelContext>
   
   <bean id="busController" class="healthcheck.util.BusController">
 	<property name="actx" ref="camelContext" />
-	</bean>
+  </bean>
 	
+  <bean id="centralLogger" class="centralLog.api.CentralLogger">
+	<property name="actx" ref="camelContext" />
+  </bean>
+  
   <!-- lets configure the default ActiveMQ broker URL -->
   <bean id="jms" class="org.apache.camel.component.jms.JmsComponent">
     <property name="connectionFactory">

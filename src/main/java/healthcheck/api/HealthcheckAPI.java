@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -32,6 +33,8 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import centralLog.api.CentralLogMessage;
+import centralLog.api.CentralLogger;
 import healthcheck.model.Component;
 import healthcheck.model.HCPassiveMessage;
 import healthcheck.model.HCRepository;
@@ -92,7 +95,7 @@ public class HealthcheckAPI {
 		msg.setComponentName( componentname );
 		msg.setApiKey(apikey);
 		
-		logger.info("Received POST for HCPassiveMessage: " + msg.getComponentName() + " | key: " + msg.getApiKey()  );
+		logger.info("Received GET for HCPassiveMessage: " + msg.getComponentName() + " | key: " + msg.getApiKey()  );
 		
 		
 		if ( (msg.getApiKey() == null) ||  (msg.getComponentName() == null) || (msg.getComponentName().equals("") )) {
@@ -106,6 +109,58 @@ public class HealthcheckAPI {
 
 		if ( ( component != null  ) && ( component.getApikeySecret().equals( msg.getApiKey() ) )){
 			BusController.getInstance().componentSeen( component );
+			return Response.ok( msg ).build();
+		}else{			
+			return Response.status(Status.BAD_REQUEST).entity("Component not found or API KEY is wrong").build();
+		}
+
+	
+	}
+	
+	/**
+	 * example payload is 
+	 * {
+	 * 	"cLevel":"ERROR",
+	 * 	"message":"An error log message"
+	 * }
+	 * 
+	 * @param logmessage
+	 * @param componentname
+	 * @param apikey
+	 * @return
+	 */
+	@POST
+	@Path("/admin/components/{componentname}/{apikey}/log")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response log( CentralLogMessage logmessage, @PathParam("componentname") String componentname , @PathParam("apikey") String apikey) {
+
+		if ( logmessage == null ){
+			return Response.status(Status.BAD_REQUEST).build();			
+		}
+		
+		HCPassiveMessage msg = new HCPassiveMessage();
+		msg.setComponentName( componentname );
+		msg.setApiKey(apikey);
+				
+		
+		if ( (msg.getApiKey() == null) ||  (msg.getComponentName() == null) || (msg.getComponentName().equals("") )) {
+			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
+			builder.entity(" HCPassiveMessage cannot be registered");
+			logger.info("HCPassiveMessage for " + msg.getComponentName() + " cannot be registered BAD_REQUEST.");
+			throw new WebApplicationException(builder.build());
+		}
+		
+
+		logger.info("Received POST log for Message: " + msg.getComponentName() + " | key: " + msg.getApiKey()  );
+		
+		Component component = this.hcRepository.getComponentsByName().get( msg.getComponentName() );
+
+		if ( ( component != null  ) && ( component.getApikeySecret().equals( msg.getApiKey() ) )){
+			BusController.getInstance().componentSeen( component );
+			
+			CentralLogger.log(logmessage.getcLevel() , logmessage.getMessage(), msg.getComponentName());
+			
 			return Response.ok( msg ).build();
 		}else{			
 			return Response.status(Status.BAD_REQUEST).entity("Component not found or API KEY is wrong").build();
