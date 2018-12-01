@@ -169,5 +169,46 @@ public class HealthcheckAPI {
 	
 	}
 	
+	
+	@POST
+	@Path("/admin/components/{componentname}/{apikey}/simplemon")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response simplemon( String simplemon, @PathParam("componentname") String componentname , @PathParam("apikey") String apikey) {
+
+		if ( simplemon == null ){
+			return Response.status(Status.BAD_REQUEST).build();			
+		}
+		
+		HCPassiveMessage msg = new HCPassiveMessage();
+		msg.setComponentName( componentname );
+		msg.setApiKey(apikey);
+				
+		
+		if ( (msg.getApiKey() == null) ||  (msg.getComponentName() == null) || (msg.getComponentName().equals("") )) {
+			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
+			builder.entity(" HCPassiveMessage cannot be registered");
+			logger.info("HCPassiveMessage for " + msg.getComponentName() + " cannot be registered BAD_REQUEST.");
+			throw new WebApplicationException(builder.build());
+		}
+		
+
+		logger.info("Received POST log for Message: " + msg.getComponentName() + " | key: " + msg.getApiKey()  );
+		
+		Component component = this.hcRepository.getComponentsByName().get( msg.getComponentName() );
+
+		if ( ( component != null  ) && ( component.getApikeySecret().equals( msg.getApiKey() ) )){
+			BusController.getInstance().componentSeen( component );
+			
+			CentralLogger.simpleMon(simplemon, msg.getComponentName());
+			
+			return Response.ok( msg ).build();
+		}else{			
+			return Response.status(Status.BAD_REQUEST).entity("Component not found or API KEY is wrong").build();
+		}
+
+	
+	}
+	
 
 }

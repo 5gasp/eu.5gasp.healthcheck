@@ -1,5 +1,6 @@
 package centralLog.api;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,11 @@ public class CentralLogger {
 	/** the Camel Context configure via Spring. See bean.xml*/	
 	private static ModelCamelContext actx;
 	
+	/**
+	 * @param cl
+	 * @param amessage
+	 * @param componentName
+	 */
 	public static void log(CLevel cl, String amessage, String componentName){
 	
 			Map<String, Object> map = new HashMap<String, Object>();
@@ -42,6 +48,39 @@ public class CentralLogger {
 			
 		
 	}
+	
+	/**
+	 * @param values
+	 * @param componentName
+	 */
+	public static void simpleMon( String values, String componentName){
+		
+	
+
+		String json;
+		try {
+
+			HashMap<String, String> map =
+			        new ObjectMapper().readValue( values, HashMap.class);
+
+			map.put("time", Instant.now().toString());
+			map.put("component", componentName );
+			
+			json = new ObjectMapper().writeValueAsString(map);
+			//System.out.println(json);
+			FluentProducerTemplate template = actx.createFluentProducerTemplate().to("seda:simplemon?multipleConsumers=true");
+			template.withBody( json ).asyncSend();
+
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	
+}
 	
 
 	/**

@@ -28,6 +28,7 @@ public class CentralLoggerRouteBuilder  extends RouteBuilder{
 	
 
 	private static String ELASTICLOGGERURL = "";
+	private static String ELASTICSIMPLEMONURL = "";
 	
 
 	/** 
@@ -43,17 +44,31 @@ public class CentralLoggerRouteBuilder  extends RouteBuilder{
 	
 	
 	public void configure() {
-		
+
 		ELASTICLOGGERURL = hcRepository.getProperties().getProperty("ELASTICLOGGERURL");
+		ELASTICSIMPLEMONURL = hcRepository.getProperties().getProperty("ELASTICSIMPLEMONURL");
+		
 		
 		if ( ( ELASTICLOGGERURL == null ) || ELASTICLOGGERURL.equals( "" ) ){
 			logger.info( "NO ELASTICURL ROUTING. ELASTICURL = " + ELASTICLOGGERURL);
 			return; //no routing towards ELASTIC
 		}
+		
+		if ( ( ELASTICSIMPLEMONURL == null ) || ELASTICSIMPLEMONURL.equals( "" ) ){
+			logger.info( "NO ELASTICSIMPLEMONURL ROUTING. ELASTICSIMPLEMONURL = " + ELASTICSIMPLEMONURL);
+			return; //no routing towards ELASTICSIMPLEMONURL
+		}
 	
 		String url = ELASTICLOGGERURL.replace( "https://", "https4://").replace( "http://", "http4://") + "/log";
 
 		from("seda:centralLog")	
+        .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+		.toD(  url  );
+		
+		
+		url = ELASTICSIMPLEMONURL.replace( "https://", "https4://").replace( "http://", "http4://") + "/simplemon";
+
+		from("seda:simplemon")	
         .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
 		.toD(  url  );
 			
