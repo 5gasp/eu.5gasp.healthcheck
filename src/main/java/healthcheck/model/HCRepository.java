@@ -81,10 +81,10 @@ public class HCRepository {
 			}
 			
 			for (Component component : this.components) {
-				logger.info( "Loaded component JSON file from: " + component.getName() );	
+				logger.info( "Loaded component JSON file from: " + component.getName() );
 				component.maskAPIKey();
-				componentsByName.put(component.getName(), component);
-				componentsByAPIKEY.put(component.getApikey() , component);
+				componentsByName.put(component.getName(), component);	
+				componentsByAPIKEY.put(component.getApikeySecret()  , component);
 			}
 			
 		} catch (JsonParseException e) {
