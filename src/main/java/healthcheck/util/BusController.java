@@ -15,6 +15,9 @@
 
 package healthcheck.util;
 
+import java.util.concurrent.Future;
+
+import org.apache.camel.Exchange;
 import org.apache.camel.FluentProducerTemplate;
 import org.apache.camel.model.ModelCamelContext;
 
@@ -65,11 +68,45 @@ public class BusController {
 
 
 	/**
+	 * 
+	 * utility function to stop ProducerTemplate
+	 * @param result
+	 * @param template
+	 */
+	private void waitAndStopForTemplate(Future<Exchange> result, FluentProducerTemplate template) {
+		while (true) {			
+			if (result.isDone()) {
+				//logger.info( "waitAndStopForTemplate: " + template.toString() + " [STOPPED]");
+				try {
+					template.stop();
+					template.clearAll();
+					template.cleanUp();
+					break;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			try {
+				//logger.info( "waitAndStopForTemplate: " + template.toString() + " [WAITING...]");
+				Thread.sleep( 5000 );
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		
+	}
+	
+	/**
 	 * @param component
 	 */
 	public void componentSeen(Component component) {
 		FluentProducerTemplate template = actx.createFluentProducerTemplate().to("seda:componentseen?multipleConsumers=true");
-		template.withBody( component ).asyncSend();
+		Future<Exchange> result = template.withBody( component ).asyncSend();
+		waitAndStopForTemplate(result, template);
 	}
 
 
@@ -78,7 +115,8 @@ public class BusController {
 	 */
 	public void componentStatusChanged(Component component) {
 		FluentProducerTemplate template = actx.createFluentProducerTemplate().to("seda:componentchangedstatus?multipleConsumers=true");
-		template.withBody( component ).asyncSend();
+		Future<Exchange> result = template.withBody( component ).asyncSend();
+		waitAndStopForTemplate(result, template);
 		
 	}
 
