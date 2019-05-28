@@ -62,13 +62,15 @@ public class CentralLoggerRouteBuilder  extends RouteBuilder{
 		String url = ELASTICLOGGERURL.replace( "https://", "https4://").replace( "http://", "http4://") + "/_doc";
 
 		from("seda:centralLog")	
+		.setHeader(Exchange.CONTENT_TYPE, constant( "application/json" ))
         .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
 		.toD(  url  );
 		
 		
 		url = ELASTICSIMPLEMONURL.replace( "https://", "https4://").replace( "http://", "http4://") + "/_doc";
 
-		from("seda:simplemon")	
+		from("seda:simplemon")
+		.setHeader(Exchange.CONTENT_TYPE, constant( "application/json" ))
         .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
 		.toD(  url  );
 			

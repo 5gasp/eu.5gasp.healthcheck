@@ -72,6 +72,7 @@ public class ESRouteBuilder  extends RouteBuilder{
 			.log( "Will post component: " + comp.getName() + " (every " + period + " msecs) to Elastic" )
 			.setBody().constant(comp)
 			.bean(ESh.class, "amap")
+			.setHeader(Exchange.CONTENT_TYPE, constant( "application/json" ))
             .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
 			.toD(  url  )
 			.log( "End refresh route. Next in " + REFRESH_PERIOD + " msecs");
