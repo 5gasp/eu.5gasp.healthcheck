@@ -65,7 +65,8 @@ public class ESRouteBuilder  extends RouteBuilder{
 	
 		for (Component comp : hcRepository.getComponents()) {
 			String url = ELASTICURL.replace( "https://", "https4://").replace( "http://", "http4://") ;
-			url = url + "/" + comp.getName().toLowerCase() + "/_doc";
+			//url = url + "/" + comp.getName().toLowerCase() + "/_doc";
+			url = url + "/_doc";
 			int period = REFRESH_PERIOD + RandomUtils.nextInt( 30000 );
 			//create a timer to post status
 			from("timer://" + comp.getName().replace(" ", "_") + "Timer?delay=10m&period=" + period  )
