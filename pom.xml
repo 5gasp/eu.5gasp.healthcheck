@@ -11,7 +11,7 @@
   <url>http://maven.apache.org</url>
 
 <properties>
-		<jackson.version>2.8.7</jackson.version>
+		<jackson.version>2.12.1</jackson.version>
 		<maven-license-plugin.version>1.2.5</maven-license-plugin.version>
 		<cxf.version>3.2.5</cxf.version>
 		<httpclient.version>4.2.1</httpclient.version>
