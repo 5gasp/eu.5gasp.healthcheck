@@ -17,6 +17,7 @@ package healthcheck.model;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -70,7 +71,7 @@ public class Component {
 		super();
 		this.failoverThreshold = 60000;
 		this.mode = HealthCheckMode.PASSIVE;
-		this.status = ComponentStatus.FAIL;
+		this.status = ComponentStatus.UP;
 		this.issueRaised = true;  //we start from true so not to send immediatelly an issue if seen error after service restart
 	}
 	/**
@@ -297,7 +298,11 @@ public class Component {
 
 	public void updateStatusSinceLastSeen() {		
 		
-		if ( (lastSeen != null) && (this.getSecondsDiffFromLastSeen() <= this.failoverThreshold ) )
+//		if ( (lastSeen != null) && (this.getSecondsDiffFromLastSeen() <= this.failoverThreshold ) )
+		Random rand = new Random(); //10 of random class	      
+		int int_random = rand.nextInt(10); 
+	      
+		if ( int_random>2 )
 		{
 			issueRaised = false; //clear the flag the we send an Issue about this status
 			if (this.type.equals( ComponentType.PROCESS ) ) {

@@ -15,14 +15,13 @@
 	<bean id="repositoryBean" class="healthcheck.model.HCRepository">
 	</bean>
 
-	<!-- CXF Swagger2Feature -->
+	<!-- CXF Swagger2Feature 
 	<bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
-		<!-- customize some of the properties -->
 		<property name="basePath" value="/api/swaggerSpec" />
 		<property name="contact" value="tranoris@ece.upatras.gr" />
 		<property name="scanAllResources" value="true" />		
 	</bean>
-
+-->
 	<jaxrs:server id="services" address="/api/">
 		<jaxrs:serviceBeans>
 
@@ -41,7 +40,7 @@
 			<!-- <ref bean="basicAuthValidator"/> -->
 		</jaxrs:inInterceptors>
 		<jaxrs:features>
-			<ref bean="swagger2Feature" />
+			<!--  <ref bean="swagger2Feature" /> -->
 		</jaxrs:features>
 
 	</jaxrs:server>

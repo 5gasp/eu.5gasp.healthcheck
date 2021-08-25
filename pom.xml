@@ -2,12 +2,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>eu.5ginfire</groupId>
-  <artifactId>eu.5ginfire.healthcheck</artifactId>
+  <groupId>eu.5gasp</groupId>
+  <artifactId>eu.eu.5gasp.healthcheck</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
 
-  <name>eu.5ginfire.healthcheck</name>
+  <name>eu.eu.5gasp.healthcheck</name>
   <url>http://maven.apache.org</url>
 
 <properties>
@@ -255,9 +255,27 @@
 			<version>1.5.2</version>
 		</dependency>
 		
-
+		<!-- API, java.xml.bind module -->
+		<dependency>
+		    <groupId>jakarta.xml.bind</groupId>
+		    <artifactId>jakarta.xml.bind-api</artifactId>
+		    <version>2.3.2</version>
+		</dependency>
+		
+		<!-- Runtime, com.sun.xml.bind module -->
+		<dependency>
+		    <groupId>org.glassfish.jaxb</groupId>
+		    <artifactId>jaxb-runtime</artifactId>
+		    <version>2.3.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.sun.activation</groupId>
+		    <artifactId>jakarta.activation</artifactId>
+		    <version>1.2.2</version>
+		</dependency>
+				
 		<!-- swagger spec will be under http://localhost:13000/hcs/services/api/swagger.json 
-			. TO create useful clients and specs go to https://editor.swagger.io -->
+			. TO create useful clients and specs go to https://editor.swagger.io 
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-service-description-swagger</artifactId>
@@ -267,7 +285,9 @@
 			<groupId>org.webjars</groupId>
 			<artifactId>swagger-ui</artifactId>
 			<version>3.1.7</version>
-		</dependency>
+		</dependency>-->
+		
+		
 	</dependencies>
 
 
@@ -510,8 +530,8 @@
 									</contextHandler>
 									<contextHandler
 										implementation="org.eclipse.jetty.server.handler.ContextHandler">
-										<contextPath>/mp</contextPath>
-										<resourceBase>${project.basedir}/../eu.5ginfire.portal.web/src</resourceBase>
+										<contextPath>/</contextPath>
+										<resourceBase>${project.basedir}/../eu.5gasp.healthcheck.web/build</resourceBase>
 										<handler implementation="org.eclipse.jetty.server.handler.ResourceHandler">
 											<cacheControl>no-cache</cacheControl>
 											<directoriesListed>true</directoriesListed>
