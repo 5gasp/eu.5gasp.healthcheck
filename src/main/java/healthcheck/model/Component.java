@@ -298,11 +298,11 @@ public class Component {
 
 	public void updateStatusSinceLastSeen() {		
 		
-//		if ( (lastSeen != null) && (this.getSecondsDiffFromLastSeen() <= this.failoverThreshold ) )
-		Random rand = new Random(); //10 of random class	      
-		int int_random = rand.nextInt(10); 
+		if ( (lastSeen != null) && (this.getSecondsDiffFromLastSeen() <= this.failoverThreshold ) )
+		// Random rand = new Random(); //10 of random class	      
+		// int int_random = rand.nextInt(10); 
 	      
-		if ( int_random>2 )
+		// if ( int_random>2 )
 		{
 			issueRaised = false; //clear the flag the we send an Issue about this status
 			if (this.type.equals( ComponentType.PROCESS ) ) {
