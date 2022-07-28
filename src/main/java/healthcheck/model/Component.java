@@ -324,7 +324,8 @@ public class Component {
 	 */
 	public String getLastSeenUTC() {
 		if ( this.getLastSeen() != null ){
-			return this.getLastSeen().atOffset( ZoneOffset.UTC ).toString() + " UTC" ; 
+			// return this.getLastSeen().atOffset( ZoneOffset.UTC ).toString() + " UTC" ; 
+			return this.getLastSeen().atOffset( ZoneOffset.UTC ).toString(); 
 		} else
 			return "NEVER";
 	}
